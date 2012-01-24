@@ -43,24 +43,24 @@ jogo.loadFlightPlan = function(inTitle) {
 }
 
 jogo.displayFlightPlan = function(flightPlan) {
-  var i, f, numLegs, candidateNumLegs;
+  var i, f; // , numLegs, candidateNumLegs;
   document.flight_plan.plan_title.value = flightPlan.title;
   document.flight_plan.aircraft_ktas.value = flightPlan.ktas;
   document.flight_plan.aircraft_fuel_burn_gph.value = flightPlan.gph;
   // TODO: don't use tc.length, use whatever the max field length is.
-  numLegs = flightPlan[jogo.legFields[0]].length;
-  for(f = 1; f < jogo.legFields.length; f++) {
-    candidateNumLegs = flightPlan[jogo.legFields[f]].length;
-    if(candidateNumLegs > numLegs) {
-      numLegs = jogo.legFields[f].length;
-    }
-  }
-  for(i = 0; i < numLegs; i++) {
+  // numLegs = flightPlan[jogo.legFields[0]].length;
+  // for(f = 1; f < jogo.legFields.length; f++) {
+    // candidateNumLegs = flightPlan[jogo.legFields[f]].length;
+    // if(candidateNumLegs > numLegs) {
+      // numLegs = jogo.legFields[f].length;
+    // }
+  // }
+  for(i = 0; i < flightPlan.legs.length; i++) {
     if(i > 1) {
       jogo.addFlightPlanRow();
     }
     for(f = 0; f < jogo.legFields.length; f++) {
-      document.flight_plan[jogo.legFields[f]][i].value = flightPlan[jogo.legFields[f]][i];
+      document.flight_plan[jogo.legFields[f]][i].value = flightPlan.legs[i][jogo.legFields[f]];
     }
   }
 }
@@ -89,6 +89,7 @@ jogo.saveFlightPlan = function(inTitle) {
 
   plan.ktas = document.flight_plan.aircraft_ktas.value;
   plan.gph = document.flight_plan.aircraft_fuel_burn_gph.value;
+  plan.legs = [];
   
   // plan.flight_plan = document.flight_plan;
   // Substitute for "document.flight_plan" yielding an unserializable circular structure
@@ -97,13 +98,15 @@ jogo.saveFlightPlan = function(inTitle) {
   // waypoint altitude std_tmp_c
   // leg_dist remaining_dist gs_est gs_act ete ate eta ata
   // leg_fuel remaining_fuel
-  for(f = 0; f < jogo.legFields.length; f++) {
-    plan[jogo.legFields[f]] = [];
-  }
+  // for(f = 0; f < jogo.legFields.length; f++) {
+    // plan[jogo.legFields[f]] = [];
+  // }
 
   for(i = 0; i < document.flight_plan.legmarker.length; i++) {
+    plan.legs[i] = {};
     for(f = 0; f < jogo.legFields.length; f++) {
-      plan[jogo.legFields[f]][i] = document.flight_plan[jogo.legFields[f]][i].value;
+      // plan[jogo.legFields[f]][i] = document.flight_plan[jogo.legFields[f]][i].value;
+      plan.legs[i][jogo.legFields[f]] = document.flight_plan[jogo.legFields[f]][i].value;
     }
   }
   localStorage[planKey] = JSON.stringify(plan);
