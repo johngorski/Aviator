@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <title>VFR Flight Planner</title>
+  <link rel="stylesheet" type="text/css" href="css/vfr-planner.css"/>
+  <script type="text/javascript" src="js/jquery-1.6.2.js"></script>
+  <script type="text/javascript" src="js/vfr-planner.js"></script>
+  <script type="text/javascript" src="js/json2.js"></script>
+</head>
+<body>
+
+<form name="flight_plan">
+<table id="aircraft_cruise_profile">
+  <tr><td><input type="text" name="plan_title"/></td><td><button id="save">Save flight plan</button></td><td><button id="new_plan">New plan</button></td></tr>
+  <tr>
+    <td>
+      <select name="saved_plans" multiple="false">
+      </select>
+    <td>
+      <button id="load">Load flight plan</button><br />
+      <button id="remove">Remove flight plan</button>
+    </td>
+  </tr>
+  <tr><th>KTAS</th><td><input type="text" id="aircraft_ktas" class="number"/></td></tr>
+  <tr><th>Fuel burn (gph)</th><td><input type="text" id="aircraft_fuel_burn_gph" class="number"/></td></tr>
+  <tr><th>Magnetic deviance</th><td><table></table></td></tr>
+</table>
+
+<table id="vfr_plan" border="1" cellpadding="4"><!-- route -->
+  <thead>
+    <tr><th>Winds</th><th>Heading</th><th>Next waypoint</th><th>DIST</th><th>GS</th><th>Time</th><th>Fuel</th></tr>
+    <tr>
+      <td><!-- winds -->
+        <table border="1" cellpadding="4">
+          <tr><th>dir</th><th>vel</th></tr>
+          <tr><th colspan="2">temp</th</tr>
+        </table>
+      </td>
+      <td><!-- heading -->
+        <table border="1" cellpadding="4">
+          <tr><th>TC</th><th>TH</th><th>MH</th><th rowspan="2">CH</th></tr>
+          <tr><th>WCA</th><th>Var</th><th>Dev</th></tr>
+        </table>
+      </td>
+      <td><!-- next waypoint -->
+        <table>
+          <tr><td colspan="2"><input type="text"/></td></tr>
+          <tr><td>alt <input type="text" maxlength="5" size="5"/>ft</td><td>std tmp <input type="text" maxlength="4" size="4" class="calculated"/>C</td></tr>
+        </table>
+      </td>
+      <td><!-- dist -->
+        <table border="1" cellpadding="4">
+          <tr><th>LEG</th></tr>
+          <tr><th>REM</th></tr>
+        </table>
+      </td>
+      <td><!-- GS -->
+        <table border="1" cellpadding="4">
+          <tr><th>EST</th></tr>
+          <tr><th>ACT</th></tr>
+        </table>
+      </td>
+      <td><!-- time -->
+        <table border="1" cellpadding="4">
+          <tr><th>ETE</th><th>ETA</th></tr>
+          <tr><th>ATE</th><th>ATA</th></tr>
+        </table>
+      </td>
+      <td><!-- fuel -->
+        <table border="1" cellpadding="4">
+          <tr><th>LEG</th></tr>
+          <tr><th>REM</th></tr>
+        </table>
+      </td>
+    </tr>
+  </thead>
+  <tfoot></tfoot>
+  <tbody>  
+    <tr class="trip_leg">
+      <input type="hidden" name="legmarker" value=""/>
+      <td><!-- winds -->
+      <table>
+        <tr>
+          <td><input type="text" name="wind_dir" class="direction"/></td>
+          <td><input type="text" name="wind_speed" maxlength="3" size="3"/></td>
+        </tr>
+        <tr>
+          <td colspan="2"><input type="text" name="temp" maxlength="3" size="3"/></td>
+        </tr>
+      </table>
+    </td>
+    <td><!-- headings -->
+      <table>
+        <tr>
+          <td><input type="text" name="tc" class="direction" placeholder="TC"/></input></td>
+          <td><input type="text" name="th" class="calculated direction" placeholder="TH"/></td>
+          <td><input type="text" name="mh" class="calculated direction" placeholder="MH"/></td>
+          <td rowspan="2"><input type="text" name="ch" class="calculated direction" placeholder="CH"/></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="wca" class="calculated direction" placeholder="WCA"/></td>
+          <td><input type="text" name="var" class="direction" placeholder="Var"/></td>
+          <td><input type="text" name="dev" class="calculated direction" placeholder="Dev"/></td>
+        </tr>
+      </table>
+    </td>
+    <td><!-- next waypoint -->
+      <table>
+        <tr><td colspan="2"><input type="text" name="waypoint"/></td></tr>
+        <tr><td>alt <input type="text" name="altitude" class="altitude"/>ft</td><td>std tmp <input type="text" name="std_tmp_c" maxlength="4" size="4" class="calculated"/>C</td></tr>
+      </table>
+    </td>
+    <td><!-- dist -->
+      <table>
+        <tr><td><input type="text" name="leg_dist" maxlength="4" size="4"/></td></tr>
+        <tr><td><input type="text" name="remaining_dist" class="calculated" maxlength="4" size="4"/><td></tr>
+      </table>
+    </td>
+    <td><!-- gs -->
+      <table>
+        <tr><td><input type="text" name="gs_est" class="calculated" maxlength="3" size="3"/></td></tr>
+        <tr><td><input type="text" name="gs_act" class="calculated" maxlength="3" size="3"/><td></tr>
+      </table>
+    </td>
+    <td><!-- time -->
+      <table>
+        <tr><td><input type="text" name="ete" class="calculated"/></td><td><input type="text" name="eta" class="calculated"/></td></tr>
+        <tr><td><input type="text" name="ate" class="calculated"/></td><td><input type="text" name="ata" placeholder="Click to mark ATA" readonly/></td></tr>
+      </table>
+    </td>
+    <td><!-- fuel -->
+      <table>
+        <tr><td><input type="text" name="leg_fuel" maxlength="4" size="4"/></td></tr>
+        <tr><td><input type="text" name="remaining_fuel" class="calculated" maxlength="4" size="4"/></tr>
+        </table>
+      </td>
+    </tr>
+    <tr class="trip_leg">
+      <input type="hidden" name="legmarker" value=""/>
+      <td><!-- winds -->
+      <table>
+        <tr>
+          <td><input type="text" name="wind_dir" class="direction"/></td>
+          <td><input type="text" name="wind_speed" maxlength="3" size="3"/></td>
+        </tr>
+        <tr>
+          <td colspan="2"><input type="text" name="temp" maxlength="3" size="3"/></td>
+        </tr>
+      </table>
+    </td>
+    <td><!-- headings -->
+      <table>
+        <tr>
+          <td><input type="text" name="tc" class="direction" placeholder="TC"/></input></td>
+          <td><input type="text" name="th" class="calculated direction" placeholder="TH"/></td>
+          <td><input type="text" name="mh" class="calculated direction" placeholder="MH"/></td>
+          <td rowspan="2"><input type="text" name="ch" class="calculated direction" placeholder="CH"/></td>
+        </tr>
+        <tr>
+          <td><input type="text" name="wca" class="calculated direction" placeholder="WCA"/></td>
+          <td><input type="text" name="var" class="direction" placeholder="Var"/></td>
+          <td><input type="text" name="dev" class="calculated direction" placeholder="Dev"/></td>
+        </tr>
+      </table>
+    </td>
+    <td><!-- next waypoint -->
+      <table>
+        <tr><td colspan="2"><input type="text" name="waypoint"/></td></tr>
+        <tr><td>alt <input type="text" name="altitude" class="altitude"/>ft</td><td>std tmp <input type="text" name="std_tmp_c" maxlength="4" size="4" class="calculated"/>C</td></tr>
+      </table>
+    </td>
+    <td><!-- dist -->
+      <table>
+        <tr><td><input type="text" name="leg_dist" maxlength="4" size="4"/></td></tr>
+        <tr><td><input type="text" name="remaining_dist" class="calculated" maxlength="4" size="4"/><td></tr>
+      </table>
+    </td>
+    <td><!-- gs -->
+      <table>
+        <tr><td><input type="text" name="gs_est" class="calculated" maxlength="3" size="3"/></td></tr>
+        <tr><td><input type="text" name="gs_act" class="calculated" maxlength="3" size="3"/><td></tr>
+      </table>
+    </td>
+    <td><!-- time -->
+      <table>
+        <tr><td><input type="text" name="ete" class="calculated"/></td><td><input type="text" name="eta" class="calculated"/></td></tr>
+        <tr><td><input type="text" name="ate" class="calculated"/></td><td><input type="text" name="ata" placeholder="Click to mark ATA" readonly/></td></tr>
+      </table>
+    </td>
+    <td><!-- fuel -->
+      <table>
+        <tr><td><input type="text" name="leg_fuel" maxlength="4" size="4"/></td></tr>
+        <tr><td><input type="text" name="remaining_fuel" class="calculated" maxlength="4" size="4"/></tr>
+        </table>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<button id="add">Add waypoint</button> <button id="calculate">Calculate</button>
+
+</form>
+
+</body>
+</html>
