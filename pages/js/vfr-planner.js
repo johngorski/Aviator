@@ -43,18 +43,11 @@ jogo.loadFlightPlan = function(inTitle) {
 }
 
 jogo.displayFlightPlan = function(flightPlan) {
-  var i, f; // , numLegs, candidateNumLegs;
+  var i, f;
   document.flight_plan.plan_title.value = flightPlan.title;
   document.flight_plan.aircraft_ktas.value = flightPlan.ktas;
   document.flight_plan.aircraft_fuel_burn_gph.value = flightPlan.gph;
-  // TODO: don't use tc.length, use whatever the max field length is.
-  // numLegs = flightPlan[jogo.legFields[0]].length;
-  // for(f = 1; f < jogo.legFields.length; f++) {
-    // candidateNumLegs = flightPlan[jogo.legFields[f]].length;
-    // if(candidateNumLegs > numLegs) {
-      // numLegs = jogo.legFields[f].length;
-    // }
-  // }
+ 
   for(i = 0; i < flightPlan.legs.length; i++) {
     if(i > 1) {
       jogo.addFlightPlanRow();
@@ -78,37 +71,37 @@ jogo.legFields = [
   "leg_fuel", "remaining_fuel"
 ];
 
-// Load flight plan from HTML5 local storage
-// Flight plan keys are prefixed with 'jogo.' as a namespacing convention.
-jogo.saveFlightPlan = function(inTitle) {
-  var title = $.trim(inTitle);
+jogo.flightPlanFormToObject = function() {
   var plan = {};
-  plan.title = title;
-  var planKey = 'jogo.' + title;
   var f, i;
 
   plan.ktas = document.flight_plan.aircraft_ktas.value;
   plan.gph = document.flight_plan.aircraft_fuel_burn_gph.value;
   plan.legs = [];
   
-  // plan.flight_plan = document.flight_plan;
   // Substitute for "document.flight_plan" yielding an unserializable circular structure
   // wind_dir wind_speed temp
   // tc th mh ch wca var dev
   // waypoint altitude std_tmp_c
   // leg_dist remaining_dist gs_est gs_act ete ate eta ata
   // leg_fuel remaining_fuel
-  // for(f = 0; f < jogo.legFields.length; f++) {
-    // plan[jogo.legFields[f]] = [];
-  // }
-
   for(i = 0; i < document.flight_plan.legmarker.length; i++) {
     plan.legs[i] = {};
     for(f = 0; f < jogo.legFields.length; f++) {
-      // plan[jogo.legFields[f]][i] = document.flight_plan[jogo.legFields[f]][i].value;
       plan.legs[i][jogo.legFields[f]] = document.flight_plan[jogo.legFields[f]][i].value;
     }
   }
+  return plan;
+}
+
+// Load flight plan from HTML5 local storage
+// Flight plan keys are prefixed with 'jogo.' as a namespacing convention.
+jogo.saveFlightPlan = function(inTitle) {
+  var title = $.trim(inTitle);
+  var plan = jogo.flightPlanFormToObject();
+  plan.title = title;
+  var planKey = 'jogo.' + title;
+  
   localStorage[planKey] = JSON.stringify(plan);
   jogo.loadFlightPlans();
 }
@@ -129,6 +122,9 @@ jogo.validate = function() {
 //   groundSpeed
 //   eteHours
 //   fuelBurn
+// This is really two functions:
+//   1. applyWinds(trueCourseDeg, airspeedKT, windDirDeg, windSpeedKT) = {wcaDeg, groundSpeedKT}
+//   2. tfd(distance, groundSpeed, burnRate) = {timeMin, fuelGal}
 jogo.calculateLeg = function(flightIntent, wind) {
   var output = {};
   var windAngleRad = (flightIntent.trueCourse - wind.direction) * Math.PI * 2;
@@ -136,6 +132,21 @@ jogo.calculateLeg = function(flightIntent, wind) {
   output.groundSpeed = flightIntent.airspeed - wind.speed * Math.cos(windAngleRad); // NOPE! That's wrong (TODO)
   output.eteHours = flightIntent.distance / output.groundSpeed;
   return output;
+}
+
+jogo.radToDeg = function(rad) {
+  return 180 * rad / Math.PI;
+}
+
+jogo.degToRad = function(deg) {
+  return Math.PI * deg / 180;
+}
+
+jogo.applyWinds = function(trueCourseDeg, airspeedKT, windDirDeg, windspeedKT) {
+  var wcaRad, gsKT;
+  wcaRad = Math.asin(windspeedKT * Math.sin(jogo.degToRad(windDirDeg - trueCourseDeg)) / airspeedKT);
+  gsKT = airspeedKT * Math.cos(wcaRad) - windspeedKT * Math.cos(jogo.degToRad(windDirDeg - trueCourseDeg));
+  return { "wcaDeg" : jogo.radToDeg(wcaRad), "gsKT" : gsKT };
 }
 
 jogo.calculate = function() {
