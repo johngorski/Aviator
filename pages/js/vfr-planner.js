@@ -5,12 +5,9 @@ jogo.standardTemperatureCforAltitudeFt = function (altitudeFt) { "use strict";
   return 15 - stdTemperatureCDiff;
 };
 
-jogo.updateForm = function (calculatedValues) { "use strict";
-};
-
 jogo.twoDigitString = function (val) { "use strict";
   // TODO: There has to be a better way in JavaScript
-  return val < 10 ? '0' + val : val + "";
+  return val < 10 ? '0' + val : val;
 };
 
 // Query local storage for all flight plans
@@ -22,7 +19,7 @@ jogo.loadFlightPlans = function () { "use strict";
   
   for(i = 0; i < localStorage.length; i += 1) {
     key = localStorage.key(i);
-    if(key.match(/^jogo\..+$/) !== null) {
+    if(key.match(/^jogo\.[\w\d\s]+$/) !== null) {
       thisPlan = JSON.parse(localStorage[key]);
       // add plan information as selection options
       planList.append('<option value="' + thisPlan.title + '">' + thisPlan.title + '</option>');
@@ -72,6 +69,7 @@ jogo.legFields = [
 jogo.flightPlanFormToObject = function () { "use strict";
   var f, i, plan = {};
 
+  plan.title = $.trim(document.flight_plan.plan_title.value);
   plan.ktas = document.flight_plan.aircraft_ktas.value;
   plan.gph = document.flight_plan.aircraft_fuel_burn_gph.value;
   plan.legs = [];
@@ -93,12 +91,10 @@ jogo.flightPlanFormToObject = function () { "use strict";
 
 // Load flight plan from HTML5 local storage
 // Flight plan keys are prefixed with 'jogo.' as a namespacing convention.
-jogo.saveFlightPlan = function (inTitle) { "use strict";
-  var title, plan, planKey;
-  title = $.trim(inTitle);
+jogo.saveFlightPlan = function () { "use strict";
+  var plan, planKey;
   plan = jogo.flightPlanFormToObject();
-  plan.title = title;
-  planKey = 'jogo.' + title;
+  planKey = 'jogo.' + plan.title;
   
   localStorage[planKey] = JSON.stringify(plan);
   jogo.loadFlightPlans();
@@ -106,31 +102,6 @@ jogo.saveFlightPlan = function (inTitle) { "use strict";
 
 jogo.toZulu = function (t) { "use strict";
   return jogo.twoDigitString(t.getUTCDate()) + jogo.twoDigitString(t.getUTCHours()) + jogo.twoDigitString(t.getUTCMinutes()) + "Z";
-};
-
-jogo.validate = function () { "use strict";
-  // TODO
-  // alert("Validated!");
-};
-
-// flightIntent = airspeed, trueCourse, distance, fuelBurn
-// wind = speed, direction
-// output:
-//   compassHeading
-//   groundSpeed
-//   eteHours
-//   fuelBurn
-// This is really two functions:
-//   1. applyWinds(trueCourseDeg, airspeedKT, windDirDeg, windSpeedKT) = {wcaDeg, groundSpeedKT}
-//   2. tfd(distance, groundSpeed, burnRate) = {timeMin, fuelGal}
-jogo.calculateLeg = function (flightIntent, wind) { "use strict";
-  var output, windAngleRad;
-  output = {};
-  windAngleRad = (flightIntent.trueCourse - wind.direction) * Math.PI * 2;
-  
-  output.groundSpeed = flightIntent.airspeed - wind.speed * Math.cos(windAngleRad); // NOPE! That's wrong (TODO)
-  output.eteHours = flightIntent.distance / output.groundSpeed;
-  return output;
 };
 
 jogo.radToDeg = function (rad) { "use strict";
@@ -149,51 +120,21 @@ jogo.applyWinds = function (trueCourseDeg, airspeedKT, windDirDeg, windspeedKT) 
 };
 
 jogo.calculate = function () { "use strict";
-  var dev, i, flightPlan, flightIntent, wind, legInfo, waypoint;
-  flightPlan = document.flight_plan;
-  flightIntent = {};
-  wind = {};
-  legInfo = {};
-  waypoint = {};
-  
-  // Aircraft information needed:
-  //   Cruise true airspeed
-  flightIntent.airspeed = $('#aircraft_ktas').val();
-  //   Cruise fuel burn
-  flightIntent.fuelBurn = $('#aircraft_fuel_burn_gph').val();
-  // TODO: Magnetic deviance
-  
-  if(undefined === flightPlan.waypoint.length) {
-    waypoint.altitude = flightPlan.altitude.value;
-    waypoint.stdtmpc = jogo.standardTemperatureCforAltitudeFt(waypoint.altitude);
-  
-    wind.direction = flightPlan.wind_dir.value;
-    wind.speed = flightPlan.wind_speed.value;
-    
-    flightIntent.trueCourse = flightPlan.tc.value;
-    flightIntent.distance = flightPlan.leg_dist.value;
-
-    legInfo = jogo.calculateLeg(flightIntent, wind);
-    flightPlan.gs_est.value = legInfo.groundSpeed;
-    flightPlan.ete.value = legInfo.eteHours;
-    flightPlan.std_tmp_c.value = waypoint.stdtmpc;
-  } else {
-    for(i = 0; i < flightPlan.waypoint.length; i += 1) {
-      waypoint.altitude = flightPlan.altitude[i].value;
-      waypoint.stdtmpc = jogo.standardTemperatureCforAltitudeFt(waypoint.altitude);
-    
-      wind.direction = flightPlan.wind_dir[i].value;
-      wind.speed = flightPlan.wind_speed[i].value;
-      
-      flightIntent.trueCourse = flightPlan.tc[i].value;
-      flightIntent.distance = flightPlan.leg_dist[i].value;
-
-      legInfo = jogo.calculateLeg(flightIntent, wind);
-      flightPlan.gs_est[i].value = legInfo.groundSpeed;
-      flightPlan.ete[i].value = legInfo.eteHours;
-      flightPlan.std_tmp_c[i].value = waypoint.stdtmpc;
-    }
+  var flightPlan, i, wcaGSPair, leg;
+  flightPlan = jogo.flightPlanFormToObject(); 
+  for(i = 0; i < flightPlan.legs.length; i += 1) {
+    leg = flightPlan.legs[i];
+    // apply winds to get wind correction angle and ground speed for each leg
+    wcaGSPair = jogo.applyWinds(leg.tc, flightPlan.ktas, leg.wind_dir, leg.wind_speed);
+    leg.wca = wcaGSPair.wcaDeg;
+    leg.gs_est = wcaGSPair.gsKT;
+    // calculate ETE based on distance and ground speed
+    leg.ete = 60 * leg.leg_dist / leg.gs_est;
+    // calculate fuel burn based on burn rate and ETE
+    leg.leg_fuel = leg.ete * flightPlan.gph / 60;
   }
+  // display the results on the form
+  jogo.displayFlightPlan(flightPlan);
 };
 
 jogo.addFlightPlanRow = function () { "use strict";
@@ -213,6 +154,7 @@ jogo.clearFlightPlan = function () { "use strict";
   // TODO: clear remaining seed leg
 };
 
+// return false to avoid a second page reload
 $(document).ready(function () { "use strict";
   jogo.loadFlightPlans();
   $('#add').click(function () {
@@ -239,25 +181,18 @@ $(document).ready(function () { "use strict";
     this.value = jogo.toZulu(now);
   });
   
-  $('input').change(function () {
-     jogo.validate();
-     jogo.calculate();
-  });
-  
   $('#calculate').click(function () {
-    var calculatedValues = jogo.calculate();
-    jogo.updateForm(calculatedValues);
+    jogo.calculate();
     return false;
   });
   
   $('#save').click(function () {
-    jogo.saveFlightPlan(document.flight_plan.plan_title.value);
+    jogo.saveFlightPlan();
     return false;
   });
   
   $('#load').click(function () {
     jogo.loadFlightPlan(document.flight_plan.saved_plans.value);
-    // return false to avoid a second page reload
     return false;
   });
   
