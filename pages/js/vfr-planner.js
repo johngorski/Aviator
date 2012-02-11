@@ -1,5 +1,46 @@
 var jogo = {};
 
+jogo.constructLegField = function(name, toString) { "use strict";
+  return {
+    "name" : name,
+    "toString" : toString
+  };
+};
+
+jogo.passThrough = function(val) { "use strict";
+  return val;
+};
+
+jogo.roundToOneDecimalPoint = function(val) { "use strict";
+  return Math.round(10 * val) / 10;
+};
+
+jogo.legFields = [
+  jogo.constructLegField("wind_dir", jogo.passThrough),
+  jogo.constructLegField("wind_speed", jogo.passThrough),
+  jogo.constructLegField("temp", jogo.passThrough),
+  jogo.constructLegField("tc", jogo.passThrough),
+  jogo.constructLegField("th", Math.round),
+  jogo.constructLegField("mh", Math.round),
+  jogo.constructLegField("ch", Math.round),
+  jogo.constructLegField("wca", Math.round),
+  jogo.constructLegField("var", jogo.passThrough),
+  jogo.constructLegField("dev", Math.round),
+  jogo.constructLegField("waypoint", jogo.passThrough),
+  jogo.constructLegField("altitude", jogo.passThrough),
+  jogo.constructLegField("std_tmp_c",jogo.passThrough),
+  jogo.constructLegField("leg_dist", Math.round),
+  jogo.constructLegField("remaining_dist", Math.round),
+  jogo.constructLegField("gs_est", Math.round),
+  jogo.constructLegField("gs_act", Math.round),
+  jogo.constructLegField("ete", Math.round),
+  jogo.constructLegField("ate", jogo.passThrough),
+  jogo.constructLegField("eta", jogo.passThrough),
+  jogo.constructLegField("ata", jogo.passThrough),
+  jogo.constructLegField("leg_fuel", jogo.roundToOneDecimalPoint),
+  jogo.constructLegField("remaining_fuel", jogo.roundToOneDecimalPoint)
+];
+
 jogo.standardTemperatureCforAltitudeFt = function (altitudeFt) { "use strict";
   var stdTemperatureCDiff = altitudeFt * 2 / 1000;
   return 15 - stdTemperatureCDiff;
@@ -19,7 +60,7 @@ jogo.loadFlightPlans = function () { "use strict";
   
   for(i = 0; i < localStorage.length; i += 1) {
     key = localStorage.key(i);
-    if(key.match(/^jogo\.[\w\d\s]+$/) !== null) {
+    if(key.match(/^jogo\.[\w\d\s\-]+$/) !== null) {
       thisPlan = JSON.parse(localStorage[key]);
       // add plan information as selection options
       planList.append('<option value="' + thisPlan.title + '">' + thisPlan.title + '</option>');
@@ -38,7 +79,7 @@ jogo.loadFlightPlan = function (inTitle) { "use strict";
 };
 
 jogo.displayFlightPlan = function (flightPlan) { "use strict";
-  var i, f;
+  var i, f, currentFormField, currentFieldName;
   jogo.clearFlightPlan();
   document.flight_plan.plan_title.value = flightPlan.title;
   document.flight_plan.aircraft_ktas.value = flightPlan.ktas;
@@ -49,7 +90,9 @@ jogo.displayFlightPlan = function (flightPlan) { "use strict";
       jogo.addFlightPlanRow();
     }
     for(f = 0; f < jogo.legFields.length; f += 1) {
-      document.flight_plan[jogo.legFields[f]][i].value = flightPlan.legs[i][jogo.legFields[f]];
+      currentFieldName = jogo.legFields[f].name;
+      currentFormField = document.flight_plan[currentFieldName][i];
+      currentFormField.value = jogo.legFields[f].toString(flightPlan.legs[i][currentFieldName]);
     }
   }
 };
@@ -59,31 +102,6 @@ jogo.removeFlightPlan = function (title) { "use strict";
   jogo.loadFlightPlans();
 };
 
-jogo.legFields = [
-  "wind_dir", 
-  "wind_speed", 
-  "temp",
-  "tc", 
-  "th", 
-  "mh", 
-  "ch", 
-  "wca", 
-  "var", 
-  "dev",
-  "waypoint", 
-  "altitude", 
-  "std_tmp_c",
-  "leg_dist", 
-  "remaining_dist", 
-  "gs_est", 
-  "gs_act", 
-  "ete", 
-  "ate", 
-  "eta", 
-  "ata",
-  "leg_fuel", 
-  "remaining_fuel"
-];
 
 jogo.flightPlanFormToObject = function () { "use strict";
   var f, i, plan = {};
@@ -102,7 +120,7 @@ jogo.flightPlanFormToObject = function () { "use strict";
   for(i = 0; i < document.flight_plan.legmarker.length; i += 1) {
     plan.legs[i] = {};
     for(f = 0; f < jogo.legFields.length; f += 1) {
-      plan.legs[i][jogo.legFields[f]] = document.flight_plan[jogo.legFields[f]][i].value;
+      plan.legs[i][jogo.legFields[f].name] = document.flight_plan[jogo.legFields[f].name][i].value;
     }
   }
   return plan;
@@ -152,8 +170,8 @@ jogo.calculate = function () { "use strict";
     // calculate fuel burn based on burn rate and ETE
     leg.leg_fuel = leg.ete * flightPlan.gph / 60;
     // calculate true and magnetic headings
-    leg.th = parseInt(leg.tc) + leg.wca;
-    leg.mh = parseInt(leg.th) + parseInt(leg['var']);
+    leg.th = parseFloat(leg.tc) + leg.wca;
+    leg.mh = parseFloat(leg.th) + parseFloat(leg['var']);
   }
   // display the results on the form
   jogo.displayFlightPlan(flightPlan);
@@ -165,15 +183,12 @@ jogo.addFlightPlanRow = function () { "use strict";
 };
 
 jogo.clearFlightPlan = function () { "use strict";
-  // $('#vfr_plan tr[class="trip_leg"]:last').remove();
-  // alert($('#vfr_plan tr[class="trip_leg"]:eq(1)'));
   var i, flightPlan;
   flightPlan = document.flight_plan;
 
   for(i = flightPlan.waypoint.length - 2; i >= 1; i -= 1) {
     $('#vfr_plan tr[class="trip_leg"]:eq(' + i + ')').remove();
   }
-  // TODO: clear remaining seed leg
 };
 
 // return false to avoid a second page reload
