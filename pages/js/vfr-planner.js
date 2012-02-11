@@ -6,7 +6,7 @@ jogo.standardTemperatureCforAltitudeFt = function (altitudeFt) { "use strict";
 };
 
 jogo.twoDigitString = function (val) { "use strict";
-  // TODO: There has to be a better way in JavaScript
+  val %= 100;
   return val < 10 ? '0' + val : val;
 };
 
@@ -39,6 +39,7 @@ jogo.loadFlightPlan = function (inTitle) { "use strict";
 
 jogo.displayFlightPlan = function (flightPlan) { "use strict";
   var i, f;
+  jogo.clearFlightPlan();
   document.flight_plan.plan_title.value = flightPlan.title;
   document.flight_plan.aircraft_ktas.value = flightPlan.ktas;
   document.flight_plan.aircraft_fuel_burn_gph.value = flightPlan.gph;
@@ -59,11 +60,29 @@ jogo.removeFlightPlan = function (title) { "use strict";
 };
 
 jogo.legFields = [
-  "wind_dir", "wind_speed", "temp",
-  "tc", "th", "mh", "ch", "wca", "var", "dev",
-  "waypoint", "altitude", "std_tmp_c",
-  "leg_dist", "remaining_dist", "gs_est", "gs_act", "ete", "ate", "eta", "ata",
-  "leg_fuel", "remaining_fuel"
+  "wind_dir", 
+  "wind_speed", 
+  "temp",
+  "tc", 
+  "th", 
+  "mh", 
+  "ch", 
+  "wca", 
+  "var", 
+  "dev",
+  "waypoint", 
+  "altitude", 
+  "std_tmp_c",
+  "leg_dist", 
+  "remaining_dist", 
+  "gs_est", 
+  "gs_act", 
+  "ete", 
+  "ate", 
+  "eta", 
+  "ata",
+  "leg_fuel", 
+  "remaining_fuel"
 ];
 
 jogo.flightPlanFormToObject = function () { "use strict";
@@ -132,6 +151,9 @@ jogo.calculate = function () { "use strict";
     leg.ete = 60 * leg.leg_dist / leg.gs_est;
     // calculate fuel burn based on burn rate and ETE
     leg.leg_fuel = leg.ete * flightPlan.gph / 60;
+    // calculate true and magnetic headings
+    leg.th = parseInt(leg.tc) + leg.wca;
+    leg.mh = parseInt(leg.th) + parseInt(leg['var']);
   }
   // display the results on the form
   jogo.displayFlightPlan(flightPlan);
@@ -148,7 +170,7 @@ jogo.clearFlightPlan = function () { "use strict";
   var i, flightPlan;
   flightPlan = document.flight_plan;
 
-  for(i = flightPlan.waypoint.length - 1; i >= 1; i -= 1) {
+  for(i = flightPlan.waypoint.length - 2; i >= 1; i -= 1) {
     $('#vfr_plan tr[class="trip_leg"]:eq(' + i + ')').remove();
   }
   // TODO: clear remaining seed leg
