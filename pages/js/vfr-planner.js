@@ -84,7 +84,7 @@ jogo.displayFlightPlan = function (flightPlan) { "use strict";
   document.flight_plan.plan_title.value = flightPlan.title || "";
   document.flight_plan.aircraft_ktas.value = flightPlan.ktas || "";
   document.flight_plan.aircraft_fuel_burn_gph.value = flightPlan.gph || "";
- 
+
   for (i = 0; i < flightPlan.legs.length; i += 1) {
     if (i >= document.flight_plan.legmarker.length) { // 1) {
       jogo.addFlightPlanRow();
@@ -158,7 +158,7 @@ jogo.applyWinds = function (trueCourseDeg, airspeedKT, windDirDeg, windspeedKT) 
 };
 
 jogo.calculate = function () { "use strict";
-  var flightPlan, i, wcaGSPair, leg;
+  var flightPlan, i, wcaGSPair, leg, remainingDist, remainingFuelBurn;
   flightPlan = jogo.flightPlanFormToObject(); 
   for (i = 0; i < flightPlan.legs.length; i += 1) {
     leg = flightPlan.legs[i];
@@ -174,6 +174,18 @@ jogo.calculate = function () { "use strict";
     leg.th = parseFloat(leg.tc) + leg.wca;
     leg.mh = parseFloat(leg.th) + parseFloat(leg['var']);
   }
+
+  remainingDist = 0;
+  remainingFuelBurn = 0;
+  // calculate distance and fuel burn remaining
+  for (i = flightPlan.legs.length - 1; i >=0; i -= 1) {
+    leg = flightPlan.legs[i];
+    leg.remaining_dist = remainingDist;
+    remainingDist += parseFloat(leg.leg_dist);
+    leg.remaining_fuel = remainingFuelBurn;
+    remainingFuelBurn += parseFloat(leg.leg_fuel);
+  }
+
   // display the results on the form
   jogo.displayFlightPlan(flightPlan);
 };
@@ -192,10 +204,6 @@ jogo.clearFlightPlan = function () { "use strict";
   }
 
   jogo.displayFlightPlan({legs : [{}, {}]});
-};
-
-jogo.removePlanRow = function (index) { "use strict";
-  $('#vfr_plan tr[class="trip_leg"]:eq(' + index + ')').remove();
 };
 
 // return false to avoid a second page reload
@@ -221,15 +229,15 @@ $(document).ready(function () { "use strict";
   });
 
   $('button[class="remove_leg"]').click(function () {
-    jogo.removePlanRow(this.parentNode.parentNode.rowIndex - 2);
+    $(this).parent().parent().remove();
     return false;
   });
-  
+ 
   $('input[name="ata"]').click(function () {
     var now = new Date();
     this.value = jogo.toZulu(now);
   });
-  
+ 
   $('#calculate').click(function () {
     jogo.calculate();
     return false;
