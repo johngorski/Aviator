@@ -29,8 +29,9 @@
 
 <table id="vfr_plan" border="1" cellpadding="4"><!-- route -->
   <thead>
-    <tr><th>Winds</th><th>Heading</th><th>Next waypoint</th><th>DIST</th><th>GS</th><th>Time</th><th>Fuel</th></tr>
+    <tr><th></th><th>Winds</th><th>Heading</th><th>Next waypoint</th><th>DIST</th><th>GS</th><th>Time</th><th>Fuel</th></tr>
     <tr>
+      <td></td>
       <td><!-- winds -->
         <table border="1" cellpadding="4">
           <tr><th>dir</th><th>vel</th></tr>
@@ -79,6 +80,7 @@
   <tbody>  
     <tr class="trip_leg">
       <input type="hidden" name="legmarker" value=""/>
+      <td><button class="remove_leg">Remove</button></td>
       <td><!-- winds -->
       <table>
         <tr>
@@ -138,6 +140,7 @@
     </tr>
     <tr class="trip_leg">
       <input type="hidden" name="legmarker" value=""/>
+      <td><button class="remove_leg">Remove</button></td>
       <td><!-- winds -->
       <table>
         <tr>

@@ -1,17 +1,17 @@
 var jogo = {};
 
-jogo.constructLegField = function(name, toString) { "use strict";
+jogo.constructLegField = function (name, toString) { "use strict";
   return {
     "name" : name,
     "toString" : toString
   };
 };
 
-jogo.passThrough = function(val) { "use strict";
+jogo.passThrough = function (val) { "use strict";
   return val;
 };
 
-jogo.roundToOneDecimalPoint = function(val) { "use strict";
+jogo.roundToOneDecimalPoint = function (val) { "use strict";
   return Math.round(10 * val) / 10;
 };
 
@@ -28,7 +28,7 @@ jogo.legFields = [
   jogo.constructLegField("dev", Math.round),
   jogo.constructLegField("waypoint", jogo.passThrough),
   jogo.constructLegField("altitude", jogo.passThrough),
-  jogo.constructLegField("std_tmp_c",jogo.passThrough),
+  jogo.constructLegField("std_tmp_c", jogo.passThrough),
   jogo.constructLegField("leg_dist", Math.round),
   jogo.constructLegField("remaining_dist", Math.round),
   jogo.constructLegField("gs_est", Math.round),
@@ -54,13 +54,13 @@ jogo.twoDigitString = function (val) { "use strict";
 // Query local storage for all flight plans
 // Allow storage namespacing by prefixing with 'jogo.'
 jogo.loadFlightPlans = function () { "use strict";
-  var i, key,thisPlan, planList;
+  var i, key, thisPlan, planList;
   planList = $('select[name="saved_plans"]');
   planList.find('option').remove();
-  
-  for(i = 0; i < localStorage.length; i += 1) {
+
+  for (i = 0; i < localStorage.length; i += 1) {
     key = localStorage.key(i);
-    if(key.match(/^jogo\.[\w\d\s\-]+$/) !== null) {
+    if (key.match(/^jogo\.[\w\d\s\-]+$/) !== null) {
       thisPlan = JSON.parse(localStorage[key]);
       // add plan information as selection options
       planList.append('<option value="' + thisPlan.title + '">' + thisPlan.title + '</option>');
@@ -75,24 +75,25 @@ jogo.loadFlightPlan = function (inTitle) { "use strict";
   title = $.trim(inTitle);
   planKey = 'jogo.' + title;
   flightPlan = JSON.parse(localStorage[planKey]);
+  jogo.clearFlightPlan();
   jogo.displayFlightPlan(flightPlan);
 };
 
 jogo.displayFlightPlan = function (flightPlan) { "use strict";
-  var i, f, currentFormField, currentFieldName;
-  jogo.clearFlightPlan();
-  document.flight_plan.plan_title.value = flightPlan.title;
-  document.flight_plan.aircraft_ktas.value = flightPlan.ktas;
-  document.flight_plan.aircraft_fuel_burn_gph.value = flightPlan.gph;
+  var i, f, currentFormField, currentFieldName, currentValue;
+  document.flight_plan.plan_title.value = flightPlan.title || "";
+  document.flight_plan.aircraft_ktas.value = flightPlan.ktas || "";
+  document.flight_plan.aircraft_fuel_burn_gph.value = flightPlan.gph || "";
  
-  for(i = 0; i < flightPlan.legs.length; i += 1) {
-    if(i > 1) {
+  for (i = 0; i < flightPlan.legs.length; i += 1) {
+    if (i >= document.flight_plan.legmarker.length) { // 1) {
       jogo.addFlightPlanRow();
     }
-    for(f = 0; f < jogo.legFields.length; f += 1) {
+    for (f = 0; f < jogo.legFields.length; f += 1) {
       currentFieldName = jogo.legFields[f].name;
       currentFormField = document.flight_plan[currentFieldName][i];
-      currentFormField.value = jogo.legFields[f].toString(flightPlan.legs[i][currentFieldName]);
+      currentValue = jogo.legFields[f].toString(flightPlan.legs[i][currentFieldName]);
+      currentFormField.value = currentValue || "";
     }
   }
 };
@@ -117,9 +118,9 @@ jogo.flightPlanFormToObject = function () { "use strict";
   // waypoint altitude std_tmp_c
   // leg_dist remaining_dist gs_est gs_act ete ate eta ata
   // leg_fuel remaining_fuel
-  for(i = 0; i < document.flight_plan.legmarker.length; i += 1) {
+  for (i = 0; i < document.flight_plan.legmarker.length; i += 1) {
     plan.legs[i] = {};
-    for(f = 0; f < jogo.legFields.length; f += 1) {
+    for (f = 0; f < jogo.legFields.length; f += 1) {
       plan.legs[i][jogo.legFields[f].name] = document.flight_plan[jogo.legFields[f].name][i].value;
     }
   }
@@ -159,7 +160,7 @@ jogo.applyWinds = function (trueCourseDeg, airspeedKT, windDirDeg, windspeedKT) 
 jogo.calculate = function () { "use strict";
   var flightPlan, i, wcaGSPair, leg;
   flightPlan = jogo.flightPlanFormToObject(); 
-  for(i = 0; i < flightPlan.legs.length; i += 1) {
+  for (i = 0; i < flightPlan.legs.length; i += 1) {
     leg = flightPlan.legs[i];
     // apply winds to get wind correction angle and ground speed for each leg
     wcaGSPair = jogo.applyWinds(leg.tc, flightPlan.ktas, leg.wind_dir, leg.wind_speed);
@@ -186,9 +187,15 @@ jogo.clearFlightPlan = function () { "use strict";
   var i, flightPlan;
   flightPlan = document.flight_plan;
 
-  for(i = flightPlan.waypoint.length - 2; i >= 1; i -= 1) {
+  for (i = flightPlan.waypoint.length - 2; i >= 1; i -= 1) {
     $('#vfr_plan tr[class="trip_leg"]:eq(' + i + ')').remove();
   }
+
+  jogo.displayFlightPlan({legs : [{}, {}]});
+};
+
+jogo.removePlanRow = function (index) { "use strict";
+  $('#vfr_plan tr[class="trip_leg"]:eq(' + index + ')').remove();
 };
 
 // return false to avoid a second page reload
@@ -211,6 +218,11 @@ $(document).ready(function () { "use strict";
   $('.altitude').each(function () {
     this.size = 5;
     this.maxLength = 5;
+  });
+
+  $('button[class="remove_leg"]').click(function () {
+    jogo.removePlanRow(this.parentNode.parentNode.rowIndex - 2);
+    return false;
   });
   
   $('input[name="ata"]').click(function () {
