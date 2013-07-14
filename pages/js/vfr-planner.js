@@ -157,11 +157,23 @@ jogo.applyWinds = function (trueCourseDeg, airspeedKT, windDirDeg, windspeedKT) 
   return { "wcaDeg" : jogo.radToDeg(wcaRad), "gsKT" : gsKT };
 };
 
+jogo.normalizedCompassHeading = function(h) { "use strict";
+  var n = h % 360;
+  if (n < 0) {
+    n += 360;
+  }
+  return n;
+};
+
 jogo.calculate = function () { "use strict";
-  var flightPlan, i, wcaGSPair, leg, remainingDist, remainingFuelBurn;
+  var flightPlan, i, wcaGSPair, leg, remainingDist, remainingFuelBurn, legAltitude, cruiseBurn;
   flightPlan = jogo.flightPlanFormToObject(); 
   for (i = 0; i < flightPlan.legs.length; i += 1) {
     leg = flightPlan.legs[i];
+    // Estimate standard temperature for leg altitude
+    if (legAltitude = parseFloat(leg.altitude)) {
+      leg.std_tmp_c = 15 - (legAltitude * 2 / 1000);
+    }
     // apply winds to get wind correction angle and ground speed for each leg
     wcaGSPair = jogo.applyWinds(leg.tc, flightPlan.ktas, leg.wind_dir, leg.wind_speed);
     leg.wca = wcaGSPair.wcaDeg;
@@ -171,14 +183,18 @@ jogo.calculate = function () { "use strict";
     // calculate fuel burn based on burn rate and ETE
     leg.leg_fuel = leg.ete * flightPlan.gph / 60;
     // calculate true and magnetic headings
-    leg.th = parseFloat(leg.tc) + leg.wca;
-    leg.mh = parseFloat(leg.th) + parseFloat(leg['var']);
+    leg.th = jogo.normalizedCompassHeading(parseFloat(leg.tc) + leg.wca);
+    leg.mh = jogo.normalizedCompassHeading(parseFloat(leg.th) + parseFloat(leg['var']));
   }
 
   remainingDist = 0;
   remainingFuelBurn = 0;
+  // If the cruise burn is known, include an extra 45 minutes
+  if (cruiseBurn = parseFloat(flightPlan.gph)) {
+    remainingFuelBurn = cruiseBurn * 0.75;
+  }
   // calculate distance and fuel burn remaining
-  for (i = flightPlan.legs.length - 1; i >=0; i -= 1) {
+  for (i = flightPlan.legs.length - 1; i >= 0; i -= 1) {
     leg = flightPlan.legs[i];
     leg.remaining_dist = remainingDist;
     remainingDist += parseFloat(leg.leg_dist);
