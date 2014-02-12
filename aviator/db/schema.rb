@@ -11,14 +11,25 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140212053447) do
+ActiveRecord::Schema.define(:version => 20140212054301) do
+
+  create_table "airplanes", :force => true do |t|
+    t.string   "number"
+    t.datetime "last_annual"
+    t.float    "tach_hours"
+    t.float    "hobbs_hours"
+    t.datetime "last_100_hour"
+    t.datetime "created_at",    :null => false
+    t.datetime "updated_at",    :null => false
+  end
 
   create_table "pilots", :force => true do |t|
     t.string   "name"
     t.string   "certificate"
-    t.datetime "created_at",  :null => false
-    t.datetime "updated_at",  :null => false
+    t.datetime "created_at",   :null => false
+    t.datetime "updated_at",   :null => false
     t.integer  "weight"
+    t.datetime "last_medical"
   end
 
 end
