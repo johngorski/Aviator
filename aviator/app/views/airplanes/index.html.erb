@@ -1,0 +1,31 @@
+<h1>Listing airplanes</h1>
+
+<table>
+  <tr>
+    <th>Number</th>
+    <th>Last annual</th>
+    <th>Tach hours</th>
+    <th>Hobbs hours</th>
+    <th>Last 100 hour</th>
+    <th></th>
+    <th></th>
+    <th></th>
+  </tr>
+
+<% @airplanes.each do |airplane| %>
+  <tr>
+    <td><%= airplane.number %></td>
+    <td><%= airplane.last_annual %></td>
+    <td><%= airplane.tach_hours %></td>
+    <td><%= airplane.hobbs_hours %></td>
+    <td><%= airplane.last_100_hour %></td>
+    <td><%= link_to 'Show', airplane %></td>
+    <td><%= link_to 'Edit', edit_airplane_path(airplane) %></td>
+    <td><%= link_to 'Destroy', airplane, method: :delete, data: { confirm: 'Are you sure?' } %></td>
+  </tr>
+<% end %>
+</table>
+
+<br />
+
+<%= link_to 'New Airplane', new_airplane_path %>

@@ -1,0 +1,15 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  number: MyString
+  last_annual: 2014-02-11 21:41:45
+  tach_hours: 1.5
+  hobbs_hours: 1.5
+  last_100_hour: 2014-02-11 21:41:45
+
+two:
+  number: MyString
+  last_annual: 2014-02-11 21:41:45
+  tach_hours: 1.5
+  hobbs_hours: 1.5
+  last_100_hour: 2014-02-11 21:41:45

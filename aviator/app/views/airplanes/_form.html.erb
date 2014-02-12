@@ -1,0 +1,37 @@
+<%= form_for(@airplane) do |f| %>
+  <% if @airplane.errors.any? %>
+    <div id="error_explanation">
+      <h2><%= pluralize(@airplane.errors.count, "error") %> prohibited this airplane from being saved:</h2>
+
+      <ul>
+      <% @airplane.errors.full_messages.each do |msg| %>
+        <li><%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="field">
+    <%= f.label :number %><br />
+    <%= f.text_field :number %>
+  </div>
+  <div class="field">
+    <%= f.label :last_annual %><br />
+    <%= f.datetime_select :last_annual %>
+  </div>
+  <div class="field">
+    <%= f.label :tach_hours %><br />
+    <%= f.text_field :tach_hours %>
+  </div>
+  <div class="field">
+    <%= f.label :hobbs_hours %><br />
+    <%= f.text_field :hobbs_hours %>
+  </div>
+  <div class="field">
+    <%= f.label :last_100_hour %><br />
+    <%= f.datetime_select :last_100_hour %>
+  </div>
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>

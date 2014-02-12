@@ -1,4 +1,7 @@
 Aviator::Application.routes.draw do
+  resources :airplanes
+
+
   resources :pilots
 
 
