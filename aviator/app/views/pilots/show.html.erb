@@ -1,0 +1,15 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <b>Name:</b>
+  <%= @pilot.name %>
+</p>
+
+<p>
+  <b>Certificate:</b>
+  <%= @pilot.certificate %>
+</p>
+
+
+<%= link_to 'Edit', edit_pilot_path(@pilot) %> |
+<%= link_to 'Back', pilots_path %>

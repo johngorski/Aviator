@@ -1,4 +1,7 @@
 Aviator::Application.routes.draw do
+  resources :pilots
+
+
   # The priority is based upon order of creation:
   # first created -> highest priority.
 
