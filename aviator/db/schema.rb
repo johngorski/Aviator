@@ -11,7 +11,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20140212054301) do
+ActiveRecord::Schema.define(:version => 20140607155212) do
 
   create_table "airplanes", :force => true do |t|
     t.string   "number"
@@ -21,6 +21,25 @@ ActiveRecord::Schema.define(:version => 20140212054301) do
     t.datetime "last_100_hour"
     t.datetime "created_at",    :null => false
     t.datetime "updated_at",    :null => false
+  end
+
+  create_table "metar_cloud_layers", :force => true do |t|
+    t.integer  "type"
+    t.string   "altitude_feet_agl"
+    t.datetime "created_at",        :null => false
+    t.datetime "updated_at",        :null => false
+  end
+
+  create_table "metars", :force => true do |t|
+    t.string   "station_id"
+    t.datetime "observation_time"
+    t.decimal  "wind_dir_deg"
+    t.decimal  "wind_speed_kts"
+    t.decimal  "temperature_celsius"
+    t.decimal  "dew_point_celsius"
+    t.decimal  "altimeter_inHg"
+    t.datetime "created_at",          :null => false
+    t.datetime "updated_at",          :null => false
   end
 
   create_table "pilots", :force => true do |t|

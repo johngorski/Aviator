@@ -1,0 +1,19 @@
+# Read about fixtures at http://api.rubyonrails.org/classes/ActiveRecord/Fixtures.html
+
+one:
+  station_id: MyString
+  observation_time: 2014-06-07 08:31:57
+  wind_dir_deg: 9.99
+  wind_speed_kts: 9.99
+  temperature_celsius: 9.99
+  dew_point_celsius: 9.99
+  altimeter_inHg: 9.99
+
+two:
+  station_id: MyString
+  observation_time: 2014-06-07 08:31:57
+  wind_dir_deg: 9.99
+  wind_speed_kts: 9.99
+  temperature_celsius: 9.99
+  dew_point_celsius: 9.99
+  altimeter_inHg: 9.99
