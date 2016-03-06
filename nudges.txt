@@ -1,0 +1,18 @@
+"Fly the Airplane"
+
+Answer these questions:
+ - Of my saved flight plans, which are viable now?
+   - Weather (there/back)
+     - Civilian
+     - NOAA
+     - AviationWeather.gov
+     - DUATS
+   - Airplane availability
+   - Personal calendar
+   - Passenger calendar
+   - Pilot currency
+   - NOTAMs/TFRs
+   - What's a good day for a pre-work breakfast flight to JeffCo?
+ - Sign up for notifications
+   - Your "JeffCo pre-work Breakfast" flight plan is favorably within your configured minimums on Wednesday and Thursday. <a href="blah">Book plane</a> <a href="bah">Notify passengers</a>
+   - Get your JeffCo pre-work Breakfast (standard/outlook) briefing: [phone] [duats]

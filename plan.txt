@@ -1,0 +1,52 @@
+Route
+ - Retrieve
+ - Create
+Time - Pilot, passengers, airplane, day/night
+Aircraft
+ - Retrieve
+ - Create
+ - Performance
+   - Climb TFD
+   - Cruise TAS/fuel burn profile
+ - Availability
+ - Cost (i.e. hourly flying fee)
+Weather minimums
+ - Retrieve
+ - Create
+Pilot
+ - Currency
+ - IMSAFE
+
+We fly a route I'm comfortable with when we're available, the airplane is available, and weather is favorable going there and back, as long as there isn't anything in the NOTAMs that stops us from going, e.g. TFRs.
+ - Am I current?
+ - When am I available?
+ - What's the route?
+ - When is the airplane available?
+ - When are the passengers available?
+
+Once we decide to go, I'll reserve the airplane and get the flight on our calendars. We'll have to adjust if we're outside the weight and balance envelope of the airplane, or we might have to change routes so that we can pick up fuel along the way. Suggested passenger contributions can be calculated based on hourly flying fees.
+ - Who's in?
+ - What does everyone weigh?
+ - Can we carry enough fuel to make the flight without refueling?
+ - What's the expected cost/the suggested fair-share price?
+
+The day before the scheduled flight I'll take a look at the outlook briefing. This would be cool to get via push notification for scheduled flights. Anything that's outside our minimums will be highlighted and we might have to roll back our reservation or re-book.
+ - How's that gas looking? Basically an update on our nav log and weight and balance to see if we're good to go. Check all constraints. Update. Check constraints. Notify if we're outside constraints.
+ - Which constraints are violated?
+   - How would you like to proceed?
+     - Reschedule time?
+     - Are other routes favorable for that time? Want to change plans?
+     - Refine minimums?
+
+The same will happen once the standard briefing is available. Flight planning gas and wind correction angle calculations will re-fire based on the latest winds aloft forecast. A flight plan will be ready to file with a click, if desired. Honest-to-God paper notes planning the flight are available for printout (kneeboard-friendly, even!). You never know with these infernal computers.
+ - How much fuel should we carry? Don't forget ramp/buffer fuel!
+ - Which headings should we steer for each leg?
+ - What's the flight plan look like--the actual flying portion (nav log)?
+   - Can I fly it in X-Flight if we're not going today?
+ - Let's see those airport diagrams! Traffic patterns and taxiways are particularly interesting.
+
+After the pre-flight check is complete, we will have the option to open a flight plan or to view the VFR flight following frequency.
+ - Bug me to open a flight plan or get flight following (which frequency?)
+
+Upon landing is a great time to get a push notification to close the flight plan. GPS-assisted log book recording is neat, too.
+ - Bug me to close my flight plan
