@@ -1,16 +1,16 @@
-Route
+Route - Use SkyVector Nav logs. Those are friggin' sweet. Foreflight looks friggin' sweeter.
  - Retrieve
  - Create
 Time - Pilot, passengers, airplane, day/night
-Aircraft
+Aircraft - Also in SkyVector
  - Retrieve
  - Create
  - Performance
    - Climb TFD
    - Cruise TAS/fuel burn profile
- - Availability
- - Cost (i.e. hourly flying fee)
-Weather minimums
+ - Availability <-- NOT in SkyVector. MyFlightBook?
+ - Cost (i.e. hourly flying fee) <-- NOT in SkyVector.
+Weather minimums <-- SkyVector has IMC, SIGMET, and TFR layers. Just sayin'.
  - Retrieve
  - Create
 Pilot
