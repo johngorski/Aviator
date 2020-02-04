@@ -4,6 +4,9 @@
 (defn home []
   [:h2 "Hello, Reagent!"])
 
+(defn sz [size m]
+  (merge {:maxlength size :size size} m))
+
 (defn flight-plan []
   [:form {:name "flight_plan"}
    [:table#aircraft_cruise_profile
@@ -59,97 +62,98 @@
       [:td ;; winds
        [:table
         [:tr
-         [:td [:input.direction {:type "text" :name "wind_dir"}]]
-         [:td [:input {:type "text" :name "wind_speed" :maxlength "3" :size "3"}]]]
+         [:td [:input.direction (sz 3 {:type "text" :name "wind_dir"})]]
+         [:td [:input (sz 3 {:type "text" :name "wind_speed"})]]]
         [:tr
-         [:td {:colspan "2"} [:input {:type "text" :name "temp" :maxlength "3" :size "3"}]]]]]
+         [:td {:colspan "2"} [:input (sz 3 {:type "text" :name "temp"})]]]]]
       [:td ;; headings
        [:table
         [:tr
-         [:td [:input.direction {:type "text" :name "tc" :placeholder "TC"}]]
-         [:td [:input.direction.calculated {:type "text" :name "th" :placeholder "TH"}]]
-         [:td [:input.direction.calculated {:type "text" :name "mh" :placeholder "MH"}]]
-         [:td {:rowspan "2"} [:input.direction.calculated {:type "text" :name "ch" :placeholder "CH"}]]]
+         [:td [:input.direction (sz 3 {:type "text" :name "tc" :placeholder "TC"})]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "th" :placeholder "TH"})]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "mh" :placeholder "MH"})]]
+         [:td {:rowspan "2"} [:input.direction.calculated (sz 3 {:type "text" :name "ch" :placeholder "CH"})]]]
         [:tr
-         [:td [:input.direction.calculated {:type "text" :name "wca" :placeholder "WCA"}]]
-         [:td [:input.direction.calculated {:type "text" :name "var" :placeholder "Var"}]]
-         [:td [:input.direction.calculated {:type "text" :name "dev" :placeholder "Dev"}]]]]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "wca" :placeholder "WCA"})]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "var" :placeholder "Var"})]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "dev" :placeholder "Dev"})]]]]]
       [:td ;; next waypoint
        [:table
         [:tr [:td {:colspan "2"} [:input {:type "text" :name "waypoint"}]]]
         [:tr
-         [:td "alt" [:input.altitude {:type "text" :name "altitude"}] "ft"]
-         [:td "std tmp" [:input.calculated {:type "text" :name "std_tmp_c" :maxlength "4" :size "4"}] "C"]]]]
+         [:td "alt" [:input.altitude (sz 5 {:type "text" :name "altitude"})] "ft"]
+         [:td "std tmp" [:input.calculated (sz 3 {:type "text" :name "std_tmp_c"})] "C"]]]]
       [:td ;; dist
        [:table
-        [:tr [:td [:input {:type "text" :name "leg_dist" :maxlength "4" :size "4"}]]]
-        [:tr [:td [:input.calculated {:type "text" :name "remaining_dist" :maxlength "4" :size "4"}]]]]]
+        [:tr [:td [:input (sz 4 {:type "text" :name "leg_dist"})]]]
+        [:tr [:td [:input.calculated (sz 4 {:type "text" :name "remaining_dist"})]]]]]
       [:td ;; gs
        [:table
-        [:tr [:td [:input.calculated {:type "text" :name "gs_est" :maxlength "3" :size "3"}]]]
-        [:tr [:td [:input.calculated {:type "text" :name "gs_act" :maxlength "3" :size "3"}]]]]]
+        [:tr [:td [:input.calculated (sz 3 {:type "text" :name "gs_est"})]]]
+        [:tr [:td [:input.calculated (sz 3 {:type "text" :name "gs_act"})]]]]]
       [:td ;; time
        [:table
         [:tr
-         [:td [:input.calculated {:type "text" :name "ete"}]]
-         [:td [:input.calculated {:type "text" :name "eta"}]]]
+         [:td [:input.calculated (sz 4 {:type "text" :name "ete"})]]
+         [:td [:input.calculated (sz 4 {:type "text" :name "eta"})]]]
         [:tr
-         [:td [:input.calculated {:type "text" :name "ate"}]]
-         [:td [:input {:type "text" :name "ata" :readonly "readonly"}]]]]]
+         [:td [:input.calculated (sz 4 {:type "text" :name "ate"})]]
+         [:td [:input (sz 4 {:type "text" :name "ata" :readonly "readonly"})]]]]]
       [:td ;; fuel
        [:table
-        [:tr [:td [:input.calculated {:type "text" :name "leg_fuel" :maxlength "4" :size "4"}]]]
-        [:tr [:td [:input.calculated {:type "text" :name "remaining_fuel" :maxlength "4" :size "4"}]]]]]]
+        [:tr [:td [:input.calculated (sz 4 {:type "text" :name "leg_fuel"})]]]
+        [:tr [:td [:input.calculated (sz 4 {:type "text" :name "remaining_fuel"})]]]]]]
+     
      [:tr.trip_leg
       [:input {:type "hidden" :name "legmarker" :value ""}]
       [:td [:button.remove_leg "Remove"]]
       [:td ;; winds
        [:table
         [:tr
-         [:td [:input.direction {:type "text" :name "wind_dir"}]]
-         [:td [:input {:type "text" :name "wind_speed" :maxlength "3" :size "3"}]]]
+         [:td [:input.direction (sz 3 {:type "text" :name "wind_dir"})]]
+         [:td [:input (sz 3 {:type "text" :name "wind_speed"})]]]
         [:tr
-         [:td {:colspan "2"} [:input {:type "text" :name "temp" :maxlength "3" :size "3"}]]]]]
+         [:td {:colspan "2"} [:input (sz 3 {:type "text" :name "temp" :maxlength "3" :size "3"})]]]]]
       [:td ;; headings
        [:table
         [:tr
-         [:td [:input.direction {:type "text" :name "tc" :placeholder "TC"}]]
-         [:td [:input.direction.calculated {:type "text" :name "th" :placeholder "TH"}]]
-         [:td [:input.direction.calculated {:type "text" :name "mh" :placeholder "MH"}]]
-         [:td {:rowspan "2"} [:input.direction.calculated {:type "text" :name "ch" :placeholder "CH"}]]]
+         [:td [:input.direction (sz 3 {:type "text" :name "tc" :placeholder "TC"})]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "th" :placeholder "TH"})]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "mh" :placeholder "MH"})]]
+         [:td {:rowspan "2"} [:input.direction.calculated (sz 3 {:type "text" :name "ch" :placeholder "CH"})]]]
         [:tr
-         [:td [:input.direction.calculated {:type "text" :name "wca" :placeholder "WCA"}]]
-         [:td [:input.direction.calculated {:type "text" :name "var" :placeholder "Var"}]]
-         [:td [:input.direction.calculated {:type "text" :name "dev" :placeholder "Dev"}]]]]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "wca" :placeholder "WCA"})]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "var" :placeholder "Var"})]]
+         [:td [:input.direction.calculated (sz 3 {:type "text" :name "dev" :placeholder "Dev"})]]]]]
       [:td ;; next waypoint
        [:table
         [:tr [:td {:colspan "2"} [:input {:type "text" :name "waypoint"}]]]
         [:tr
-         [:td "alt" [:input.altitude {:type "text" :name "altitude"}] "ft"]
-         [:td "std tmp" [:input.calculated {:type "text" :name "std_tmp_c" :maxlength "4" :size "4"}] "C"]]]]
+         [:td "alt" [:input.altitude (sz 5 {:type "text" :name "altitude"})] "ft"]
+         [:td "std tmp" [:input.calculated (sz 3 {:type "text" :name "std_tmp_c"})] "C"]]]]
       [:td ;; dist
        [:table
-        [:tr [:td [:input {:type "text" :name "leg_dist" :maxlength "4" :size "4"}]]]
-        [:tr [:td [:input.calculated {:type "text" :name "remaining_dist" :maxlength "4" :size "4"}]]]]]
+        [:tr [:td [:input (sz 4 {:type "text" :name "leg_dist"})]]]
+        [:tr [:td [:input.calculated (sz 4 {:type "text" :name "remaining_dist"})]]]]]
       [:td ;; gs
        [:table
-        [:tr [:td [:input.calculated {:type "text" :name "gs_est" :maxlength "3" :size "3"}]]]
-        [:tr [:td [:input.calculated {:type "text" :name "gs_act" :maxlength "3" :size "3"}]]]]]
+        [:tr [:td [:input.calculated (sz 3 {:type "text" :name "gs_est"})]]]
+        [:tr [:td [:input.calculated (sz 3 {:type "text" :name "gs_act"})]]]]]
       [:td ;; time
        [:table
         [:tr
-         [:td [:input.calculated {:type "text" :name "ete"}]]
-         [:td [:input.calculated {:type "text" :name "eta"}]]]
+         [:td [:input.calculated (sz 4 {:type "text" :name "ete"})]]
+         [:td [:input.calculated (sz 4 {:type "text" :name "eta"})]]]
         [:tr
-         [:td [:input.calculated {:type "text" :name "ate"}]]
-         [:td [:input {:type "text" :name "ata" :readonly "readonly"}]]]]]
+         [:td [:input.calculated (sz 4 {:type "text" :name "ate"})]]
+         [:td [:input (sz 4 {:type "text" :name "ata" :readonly "readonly"})]]]]]
       [:td ;; fuel
        [:table
-        [:tr [:td [:input.calculated {:type "text" :name "leg_fuel" :maxlength "4" :size "4"}]]]
-        [:tr [:td [:input.calculated {:type "text" :name "remaining_fuel" :maxlength "4" :size "4"}]]]]]]]]
+        [:tr [:td [:input.calculated (sz 4 {:type "text" :name "leg_fuel"})]]]
+        [:tr [:td [:input.calculated (sz 4 {:type "text" :name "remaining_fuel"})]]]]]]
+     ]]
    [:button#add "Add waypoint"] [:button#calculate "Calculate"]])
 
 (reagent/render
- ;; [home]
  [flight-plan]
  (.getElementById js/document "content"))
