@@ -17,7 +17,7 @@
                  [org.webjars/jquery "2.2.4"]
                  [org.clojure/tools.logging "0.3.1"]
                  [compojure "1.5.1"]
-                 [reagent "0.5.1"]
+                 [reagent "0.6.0"]
                  [ring-webjars "0.1.1"]
                  [ring/ring-defaults "0.2.1"]
                  [mount "0.1.10"]
