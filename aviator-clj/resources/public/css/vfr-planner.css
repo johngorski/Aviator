@@ -1,13 +1,15 @@
 table {
   border: 1px;
-  padding: 4px;
 }
 
 .calculated {
   border: 1px solid;
 }
-/*that one*/
-td {
-  border: 1px;
-  padding: 3px;
+
+table.subgrid th {
+  border: 1px solid;
+}
+
+table.subgrid > tbody > tr > td {
+  border: 1px solid;
 }
