@@ -9,9 +9,10 @@ table {
 table.subgrid th {
   border: 1px solid;
   text-align: center;
+  padding: 4px;
 }
 
 table.subgrid > tbody > tr > td {
-  border: 1px solid;
   text-align: center;
+  padding: 4px;
 }
