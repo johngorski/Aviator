@@ -4,39 +4,33 @@
 (defn sz [size m]
   (merge {:type "text" :maxLength size :size size} m))
 
-(defn trip-leg-top []
-  [:tr
-   [:td {:rowSpan 2} [:button.remove_leg "Remove"]]
-   [:td [:input.direction (sz 3 {:name "wind_dir"})]][:td [:input (sz 3 {:name "wind_speed"})]]
-   [:td [:input.direction (sz 3 {:name "tc" :placeholder "TC"})]]
-   [:td [:input.direction.calculated (sz 3 {:name "th" :placeholder "TH"})]]
-   [:td [:input.direction.calculated (sz 3 {:name "mh" :placeholder "MH"})]]
-   [:td {:rowSpan "2"} [:input.direction.calculated (sz 3 {:name "ch" :placeholder "CH"})]]
-   [:td {:colSpan "2"} [:input {:type "text" :name "waypoint"}]]
-   [:td [:input (sz 4 {:name "leg_dist"})]]
-   [:td [:input.calculated (sz 3 {:name "gs_est"})]]
-   [:td [:input.calculated (sz 4 {:name "ete"})]]
-   [:td [:input.calculated (sz 6 {:name "eta"})] "Z"]
-   [:td [:input.calculated (sz 4 {:name "leg_fuel"})]]])
-
-(defn trip-leg-bottom []
-  [:tr
-   [:td {:colSpan "2"} [:input (sz 3 {:name "temp"})]]
-   [:td [:input.direction.calculated (sz 3 {:name "wca" :placeholder "WCA"})]]
-   [:td [:input.direction.calculated (sz 3 {:name "var" :placeholder "Var"})]]
-   [:td [:input.direction.calculated (sz 3 {:name "dev" :placeholder "Dev"})]]
-   [:td "alt" [:input.altitude (sz 5 {:name "altitude"})] "ft"]
-   [:td "std tmp" [:input.calculated (sz 3 {:name "std_tmp_c"})] "C"]
-   [:td [:input.calculated (sz 4 {:name "remaining_dist"})]]
-   [:td [:input.calculated (sz 3 {:name "gs_act"})]]
-   [:td [:input.calculated (sz 4 {:name "ate"})]]
-   [:td [:input (sz 6 {:name "ata" :readOnly "readonly"})] "Z"]
-   [:td [:input.calculated (sz 4 {:name "remaining_fuel"})]]])
-
 (defn trip-leg []
   [:<>
-   [trip-leg-top]
-   [trip-leg-bottom]])
+   [:tr
+    [:td {:rowSpan 2} [:button.remove_leg "Remove"]]
+    [:td [:input.direction (sz 3 {:name "wind_dir"})]][:td [:input (sz 3 {:name "wind_speed"})]]
+    [:td [:input.direction (sz 3 {:name "tc" :placeholder "TC"})]]
+    [:td [:input.direction.calculated (sz 3 {:name "th" :placeholder "TH"})]]
+    [:td [:input.direction.calculated (sz 3 {:name "mh" :placeholder "MH"})]]
+    [:td {:rowSpan "2"} [:input.direction.calculated (sz 3 {:name "ch" :placeholder "CH"})]]
+    [:td {:colSpan "2"} [:input {:type "text" :name "waypoint"}]]
+    [:td [:input (sz 4 {:name "leg_dist"})]]
+    [:td [:input.calculated (sz 3 {:name "gs_est"})]]
+    [:td [:input.calculated (sz 4 {:name "ete"})]]
+    [:td [:input.calculated (sz 6 {:name "eta"})] "Z"]
+    [:td [:input.calculated (sz 4 {:name "leg_fuel"})]]]
+   [:tr
+    [:td {:colSpan "2"} [:input (sz 3 {:name "temp"})]]
+    [:td [:input.direction.calculated (sz 3 {:name "wca" :placeholder "WCA"})]]
+    [:td [:input.direction.calculated (sz 3 {:name "var" :placeholder "Var"})]]
+    [:td [:input.direction.calculated (sz 3 {:name "dev" :placeholder "Dev"})]]
+    [:td "alt" [:input.altitude (sz 5 {:name "altitude"})] "ft"]
+    [:td "std tmp" [:input.calculated (sz 3 {:name "std_tmp_c"})] "C"]
+    [:td [:input.calculated (sz 4 {:name "remaining_dist"})]]
+    [:td [:input.calculated (sz 3 {:name "gs_act"})]]
+    [:td [:input.calculated (sz 4 {:name "ate"})]]
+    [:td [:input (sz 6 {:name "ata" :readOnly "readonly"})] "Z"]
+    [:td [:input.calculated (sz 4 {:name "remaining_fuel"})]]]])
 
 (defn flight-plan []
   [:form {:name "flight_plan"}
@@ -64,9 +58,8 @@
      [:tr [:th {:colSpan "2"} "temp"] [:th "WCA"][:th "Var"][:th "Dev"] [:th "REM"] [:th "ACT"] [:th "ATE"][:th "ATA"] [:th "REM"]]]
     [:tfoot]
     [:tbody
-     [trip-leg-top][trip-leg-bottom]
-     ;; [trip-leg]
-     [trip-leg-top][trip-leg-bottom]]]
+     [trip-leg]
+     [trip-leg]]]
    [:button#add "Add waypoint"] [:button#calculate "Calculate"]])
 
 (reagent/render
