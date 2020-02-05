@@ -41,21 +41,22 @@
 (defn flight-plan []
   [:form {:name "flight_plan"}
    [:table#aircraft_cruise_profile
-    [:tr
-     [:td [:input {:type "text" :name "plan_title"}]]
-     [:td [:button#save "Save flight plan"]]
-     [:td [:button#new_plan "New plan"]]]
-    [:tr
-     [:td [:select {:name "saved_plans" :multiple "false"}]]
-     [:td
-      [:button#load "Load flight plan"][:br]
-      [:button#remove "Remove flight plan"]]]
-    [:tr
-     [:th "KTAS"][:td [:input#aircraft_ktas.number {:type "text"}]]]
-    [:tr
-     [:th "Fuel burn (gph)"][:td [:input#aircraft_fuel_burn_gph.number {:type "text"}]]]
-    [:tr
-     [:th "Magnetic deviance"][:td [:table]]]]
+    [:tbody
+     [:tr
+      [:td [:input {:type "text" :name "plan_title"}]]
+      [:td [:button#save "Save flight plan"]]
+      [:td [:button#new_plan "New plan"]]]
+     [:tr
+      [:td [:select {:name "saved_plans" :multiple false}]]
+      [:td
+       [:button#load "Load flight plan"][:br]
+       [:button#remove "Remove flight plan"]]]
+     [:tr
+      [:th "KTAS"][:td [:input#aircraft_ktas.number (sz 4 {:type "text"})]]]
+     [:tr
+      [:th "Fuel burn (gph)"][:td [:input#aircraft_fuel_burn_gph.number (sz 4 {:type "text"})]]]
+     [:tr
+      [:th "Magnetic deviance"][:td [:table]]]]]
    [:table#vfr_plan.subgrid {:style {:border "1px solid"} :cellPadding "4"}
     [:thead
      [:tr [:th {:rowSpan 3}][:th {:colSpan 2} "Winds"][:th {:colSpan 4} "Heading"][:th {:colSpan 2} "Next waypoint"][:th "DIST"][:th "GS"][:th {:colSpan 2} "Time"][:th "Fuel"]]
