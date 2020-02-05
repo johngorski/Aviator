@@ -45,17 +45,43 @@
       [:td
        [:button#load "Load flight plan"][:br]
        [:button#remove "Remove flight plan"]]]
-     [:tr
-      [:th "KTAS"][:td [:input#aircraft_ktas.number (sz 4 {:type "text"})]]]
-     [:tr
-      [:th "Fuel burn (gph)"][:td [:input#aircraft_fuel_burn_gph.number (sz 4 {:type "text"})]]]
-     [:tr
-      [:th "Magnetic deviance"][:td [:table]]]]]
+     [:tr [:th "KTAS"][:td [:input#aircraft_ktas.number (sz 4 {:type "text"})]]]
+     [:tr [:th "Fuel burn (gph)"][:td [:input#aircraft_fuel_burn_gph.number (sz 4 {:type "text"})]]]
+     [:tr [:th "Magnetic deviance"][:td [:table]]]]]
    [:table#vfr_plan.subgrid {:style {:border "1px solid"} :cellPadding "4"}
     [:thead
-     [:tr [:th {:rowSpan 3}][:th {:colSpan 2} "Winds"][:th {:colSpan 4} "Heading"][:th {:colSpan 2} "Next waypoint"][:th "DIST"][:th "GS"][:th {:colSpan 2} "Time"][:th "Fuel"]]
-     [:tr [:th "dir"][:th "vel"] [:th "TC"][:th "TH"][:th "MH"][:th {:rowSpan 2} "CH"] [:th {:colSpan 2, :rowSpan 2}] [:th "LEG"] [:th "EST"] [:th "ETE"][:th "ETA"] [:th "LEG"]]
-     [:tr [:th {:colSpan "2"} "temp"] [:th "WCA"][:th "Var"][:th "Dev"] [:th "REM"] [:th "ACT"] [:th "ATE"][:th "ATA"] [:th "REM"]]]
+     [:tr
+      [:th {:rowSpan 3}]
+      [:th {:colSpan 2} "Winds"]
+      [:th {:colSpan 4} "Heading"]
+      [:th {:colSpan 2} "Next waypoint"]
+      [:th "DIST"]
+      [:th "GS"]
+      [:th {:colSpan 2} "Time"]
+      [:th "Fuel"]]
+     [:tr
+      [:th "dir"]
+      [:th "vel"]
+      [:th "TC"]
+      [:th "TH"]
+      [:th "MH"]
+      [:th {:rowSpan 2} "CH"]
+      [:th {:colSpan 2, :rowSpan 2}]
+      [:th "LEG"]
+      [:th "EST"]
+      [:th "ETE"]
+      [:th "ETA"]
+      [:th "LEG"]]
+     [:tr
+      [:th {:colSpan "2"} "temp"]
+      [:th "WCA"]
+      [:th "Var"]
+      [:th "Dev"]
+      [:th "REM"]
+      [:th "ACT"]
+      [:th "ATE"]
+      [:th "ATA"]
+      [:th "REM"]]]
     [:tfoot]
     [:tbody
      [trip-leg]
