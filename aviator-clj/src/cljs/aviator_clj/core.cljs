@@ -1,5 +1,8 @@
 (ns aviator-clj.core
-  (:require [reagent.core :as reagent :refer [atom]]))
+  (:require
+   [aviator-clj.vfr-planner :as vfr-planner]
+   [clojure.edn :as edn]
+   [reagent.core :as reagent :refer [atom]]))
 
 (defn sz [size m]
   (merge {:type "text" :maxLength size :size size} m))
@@ -34,7 +37,9 @@
       [:td [:input.direction (sz 3 (bind :var {:name "var" :placeholder "Var"}))]]
       [:td [:input.direction.calculated (sz 3 {:name "dev" :placeholder "Dev"})]]
       [:td "alt " [:input.altitude (sz 5 (bind :altitude {:name "altitude"}))] "ft"]
-      [:td "std tmp " [:input.calculated (sz 3 {:name "std_tmp_c"})] "℃"]
+      [:td "(std tmp " (if-let [alt (edn/read-string (get-in @plan [:legs idx :altitude]))]
+                              (Math/round (vfr-planner/standard-temperature-c-for-altitude-ft alt))
+                              "____")  "℃)"]
       [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 4 {:name "remaining_dist"})]]
       [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 3 {:name "gs_act"})]]
       [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 4 {:name "ate"})]]
