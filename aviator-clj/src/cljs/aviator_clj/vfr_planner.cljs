@@ -140,10 +140,9 @@
   (/ (* Math.PI deg) 180))
 
 (defn apply-winds [true-course-deg airspeed-kt wind-dir-deg windspeed-kt]
-  (let [wca-rad (Math/asin (/ (deg-to-rad (- wind-dir-deg true-course-deg)) airspeed-kt))
-        gs-kt (- (* airspeed-kt (Math/cos wca-rad)) (* windspeed-kt (Math/cos (deg-to-rad (- wind-dir-deg true-course-deg)))))]
+  (let [wca-rad (Math/asin (/ (deg-to-rad (- wind-dir-deg true-course-deg)) airspeed-kt))]
     {:wca-deg (rad-to-deg wca-rad)
-     :gs-kt gs-kt}))
+     :gs-kt (- (* airspeed-kt (Math/cos wca-rad)) (* windspeed-kt (Math/cos (deg-to-rad (- wind-dir-deg true-course-deg)))))}))
 
 (defn normalized-compass-heading [h]
   (let [n (rem h 360)]
