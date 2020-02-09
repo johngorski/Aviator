@@ -11,7 +11,11 @@
                     :on-change #(swap! plan assoc-in [:legs idx field] (-> % .-target .-value))}))]
     [:<>
      [:tr {:style {:border-top "1px solid"}}
-      [:td {:rowSpan 2, :style {:border-right "1px solid"}} [:a.remove_leg "Remove"]]
+      [:td
+       {:rowSpan 2, :style {:border-right "1px solid"}}
+       [:a.remove_leg
+        {:on-click (fn [] (swap! plan update :legs #(vec (concat (subvec % 0 idx) (subvec % (inc idx))))))}
+        "Remove"]]
       [:td [:input.direction (sz 3 (bind :wind-dir {:name "wind_dir"}))]]
       [:td {:style {:border-right "1px solid"}} [:input (sz 3 (bind :wind-speed {:name "wind_speed"}))]]
       [:td [:input.direction (sz 3 (bind :tc {:name "tc" :placeholder "TC"}))]]
