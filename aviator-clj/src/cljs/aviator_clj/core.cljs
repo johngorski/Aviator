@@ -13,6 +13,11 @@
               (merge input
                      {:value (get-in @plan [:legs idx field])
                       :on-change #(swap! plan assoc-in [:legs idx field] (-> % .-target .-value))}))
+            (record [field value]
+              (when (not (js/isNaN value))
+                (let [path  [:legs idx field]
+                      old (get-in @plan path)]
+                  (when (not= old value) (swap! plan assoc-in path value)))))
             (get-field [f]
               (js/parseFloat (get-in @plan [:legs idx f])))]
       (let [tc (get-field :tc)
@@ -24,46 +29,51 @@
             ete-min (vfr-planner/ete-min leg-dist gs-kt)
             fuel-burn-gph (js/parseFloat (:fuel-burn-gph @plan))
             leg-fuel-gal (vfr-planner/leg-fuel-gal ete-min fuel-burn-gph)
-            ignore (js/console.log (pr [tc gs-kt wca-deg var mh leg-dist ete-min fuel-burn-gph leg-fuel-gal]))
             ]
-        [:<>
-         [:tr {:style {:border-top "1px solid"}}
-          [:td
-           {:rowSpan 2, :style {:border-right "1px solid"}}
-           [:a.remove_leg
-            {:on-click (fn [] (swap! plan update :legs #(vec (concat (subvec % 0 idx) (subvec % (inc idx))))))}
-            "Remove"]]
-          [:td [:input.direction (sz 3 (bind :wind-dir {:name "wind_dir"}))]]
-          [:td {:style {:border-right "1px solid"}} [:input (sz 3 (bind :wind-speed {:name "wind_speed"}))]]
-          [:td [:input.direction (sz 3 (bind :tc {:name "tc" :placeholder "TC"}))] "°"]
-          [:td (Math/round th) "°"]
-          [:td (Math/round mh) "°"]
-          [:td {:rowSpan 2, :style {:border-right "1px solid"}} [:input.direction.calculated (sz 3 {:name "ch" :placeholder "CH"})]]
-          [:td {:colSpan 2} [:input (bind :waypoint {:type "text" :name "waypoint"})]]
-          [:td {:style {:border-left "1px solid"}} [:input (sz 4 (bind :leg-dist {:name "leg_dist"}))]]
-          [:td {:style {:border-left "1px solid"}} (Math/round gs-kt)]
-          [:td {:style {:border-left "1px solid"}} (Math/round ete-min)]
-          [:td [:input.calculated (sz 6 {:name "eta"})] "Z"]
-          [:td {:style {:border-left "1px solid"}} (.toFixed leg-fuel-gal 1)]]
-         [:tr {:style {:border-bottom "1px solid"}}
-          [:td {:colSpan 2, :style {:border-right "1px solid"}} [:input (sz 3 (bind :temp {:name "temp"}))]]
-          [:td (Math/round wca-deg)]
-          [:td [:input.direction (sz 3 (bind :var {:name "var" :placeholder "Var"}))]]
-          [:td [:input.direction.calculated (sz 3 {:name "dev" :placeholder "Dev"})]]
-          [:td "alt " [:input.altitude (sz 5 (bind :altitude {:name "altitude"}))] "ft"]
-          [:td
-           "(std tmp "
-           (if-let [alt (edn/read-string (get-in @plan [:legs idx :altitude]))]
-             (Math/round (vfr-planner/standard-temperature-c-for-altitude-ft alt))
-             "____")  "℃)"]
-          [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 4 {:name "remaining_dist"})]]
-          [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 3 {:name "gs_act"})]]
-          [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 4 {:name "ate"})]]
-          [:td [:input (sz 6 {:name "ata" :readOnly "readonly"})] "Z"]
-          [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 4 {:name "remaining_fuel"})]]]]))))
+        (do
+          ;; at least, avoid it outside of specific events.
+          (record :ete-min ete-min)
+          (record :leg-fuel-gal leg-fuel-gal)
+          [:<>
+           [:tr {:style {:border-top "1px solid"}}
+            [:td
+             {:rowSpan 2, :style {:border-right "1px solid"}}
+             [:a.remove_leg
+              {:on-click (fn [] (swap! plan update :legs #(vec (concat (subvec % 0 idx) (subvec % (inc idx))))))}
+              "Remove"]]
+            [:td [:input.direction (sz 3 (bind :wind-dir {:name "wind_dir"}))]]
+            [:td {:style {:border-right "1px solid"}} [:input (sz 3 (bind :wind-speed {:name "wind_speed"}))]]
+            [:td [:input.direction (sz 3 (bind :tc {:name "tc" :placeholder "TC"}))] "°"]
+            [:td (Math/round th) "°"]
+            [:td (Math/round mh) "°"]
+            [:td {:rowSpan 2, :style {:border-right "1px solid"}} [:input.direction.calculated (sz 3 {:name "ch" :placeholder "CH"})]]
+            [:td {:colSpan 2} [:input (bind :waypoint {:type "text" :name "waypoint"})]]
+            [:td {:style {:border-left "1px solid"}} [:input (sz 4 (bind :leg-dist {:name "leg_dist"}))]]
+            [:td {:style {:border-left "1px solid"}} (Math/round gs-kt)]
+            [:td {:style {:border-left "1px solid"}} (Math/round ete-min)]
+            [:td [:input.calculated (sz 6 {:name "eta"})] "Z"]
+            [:td {:style {:border-left "1px solid"}} (.toFixed leg-fuel-gal 1)]]
+           [:tr {:style {:border-bottom "1px solid"}}
+            [:td {:colSpan 2, :style {:border-right "1px solid"}} [:input (sz 3 (bind :temp {:name "temp"}))]]
+            [:td (Math/round wca-deg)]
+            [:td [:input.direction (sz 3 (bind :var {:name "var" :placeholder "Var"}))]]
+            [:td [:input.direction.calculated (sz 3 {:name "dev" :placeholder "Dev"})]]
+            [:td "alt " [:input.altitude (sz 5 (bind :altitude {:name "altitude"}))] "ft"]
+            [:td
+             "(std tmp "
+             (if-let [alt (edn/read-string (get-in @plan [:legs idx :altitude]))]
+               (Math/round (vfr-planner/standard-temperature-c-for-altitude-ft alt))
+               "____")  "℃)"]
+            [:td {:style {:border-left "1px solid"}} (reduce + (map #(js/parseFloat (:leg-dist %)) (subvec (:legs @plan) idx)))]
+            [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 3 {:name "gs_act"})]]
+            [:td {:style {:border-left "1px solid"}} [:input.calculated (sz 4 {:name "ate"})]]
+            [:td [:input (sz 6 {:name "ata" :readOnly "readonly"})] "Z"]
+            [:td {:style {:border-left "1px solid"}} (.toFixed (reduce + (* 0.75 fuel-burn-gph) (map #(js/parseFloat (:leg-fuel-gal %)) (subvec (:legs @plan) idx))) 1)]]])))))
 
 (defn flight-plan []
   (let [plan (atom {:ktas "100", :legs [{:wind-dir "090", :wind-speed "25", :tc "180", :var "-17", :waypoint "way", :altitude "5500", :leg-dist "18"} {:waypoint "point", :wind-dir "190", :wind-speed "20", :tc "100", :var "-15", :altitude "4500", :leg-dist "22"}], :fuel-burn-gph "9.1", :start "KPAE"})
+        validated (atom {})
+        calculated (atom {})
         bind (fn [field input]
                (merge input
                       {:value (get @plan field)
@@ -120,8 +130,20 @@
             [:th "ATE"]
             [:th "ATA"]
             [:th "REM"]]]
-          [:tfoot]
-          (vec (cons :tbody (map (fn [idx] [trip-leg idx plan]) (range (count (:legs @plan))))))]         
+          (vec (cons :tbody (map (fn [idx] [trip-leg idx plan]) (range (count (:legs @plan))))))
+          [:tfoot
+           [:tr
+            [:th "totals"]
+            [:td {:colSpan 8}]
+            [:td
+             {:style {:border-left "1px solid"}}
+             (Math/round (reduce + (map #(js/parseFloat (:leg-dist %)) (:legs @plan))))]
+            [:td " NM"]
+            [:td
+             {:style {:border-left "1px solid"}}
+             (Math/round (reduce + (map #(js/parseFloat (:ete-min %)) (:legs @plan))))]
+            [:td {:style {:border-right "1px solid"}} "min"]
+            [:td (.toFixed (reduce + (* 0.75 (js/parseFloat (:fuel-burn-gph @plan))) (map #(js/parseFloat (:leg-fuel-gal %)) (:legs @plan))) 1) " gal"]]]]         
          [:a#add {:on-click (fn [] (swap! plan update :legs #(conj (or % []) {})))} "Add waypoint"]]))))
 
 (reagent/render

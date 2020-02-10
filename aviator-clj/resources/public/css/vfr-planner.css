@@ -12,7 +12,7 @@ table.subgrid th {
   padding: 4px;
 }
 
-table.subgrid > tbody > tr > td {
+table.subgrid td {
   text-align: center;
   padding: 4px;
 }
